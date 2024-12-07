@@ -2322,6 +2322,9 @@ __metadata:
     "@trivago/prettier-plugin-sort-imports": ~4.3.0
     "@types/node": ~18.19.50
     "@types/react": ~18.3.5
+    "@types/react-speech-recognition": ^3
+    "@types/regenerator-runtime": ^0
+    "@types/ws": ^8
     "@typescript-eslint/eslint-plugin": ~5.40.0
     "@uniswap/sdk-core": ~5.8.2
     "@uniswap/v2-sdk": ~4.6.1
@@ -2349,6 +2352,9 @@ __metadata:
     react-dom: ~18.3.1
     react-dropzone: ^14.3.5
     react-hot-toast: ~2.4.0
+    react-speech-kit: ^3.0.1
+    react-speech-recognition: ^3.10.0
+    regenerator-runtime: ^0.14.1
     tailwind-merge: ^2.5.5
     tailwindcss: ~3.4.11
     tailwindcss-animate: ^1.0.7
@@ -2358,6 +2364,7 @@ __metadata:
     vercel: ~37.4.2
     viem: 2.21.32
     wagmi: 2.12.23
+    ws: ^8.18.0
     zustand: ~5.0.0
   languageName: unknown
   linkType: soft
@@ -2900,6 +2907,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/dom-speech-recognition@npm:*":
+  version: 0.0.4
+  resolution: "@types/dom-speech-recognition@npm:0.0.4"
+  checksum: d19266dc3a58610c517885eef46e54011ee6e59aa9a9fc703fc094731b0c34dd7c547d76cc0a48a1eb43a289b5bf787f6275c30a04a98e13942d3c2629f67ca3
+  languageName: node
+  linkType: hard
+
 "@types/eslint@npm:~8.56.12":
   version: 8.56.12
   resolution: "@types/eslint@npm:8.56.12"
@@ -3118,6 +3132,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/react-speech-recognition@npm:^3":
+  version: 3.9.5
+  resolution: "@types/react-speech-recognition@npm:3.9.5"
+  dependencies:
+    "@types/dom-speech-recognition": "*"
+  checksum: b1bc853e8bece3c8f553a16e82dcc61e7297f5dbf77f087894e0232fa3e712ca7580f5e86b3caa7ac0945dfc48071c475ac4333dbfbf12e7eedd84f4e1d53627
+  languageName: node
+  linkType: hard
+
 "@types/react@npm:*":
   version: 19.0.1
   resolution: "@types/react@npm:19.0.1"
@@ -3145,6 +3168,13 @@ __metadata:
     "@types/prop-types": "*"
     csstype: ^3.0.2
   checksum: 40e2112301d784106bdc713e3eb925c8c710e676a3a31ef65c76ca7df8529cdde3dda2db6e0f6f1878253a79bc6cf87a461aa114bd8364f453bdd2be52c175e5
+  languageName: node
+  linkType: hard
+
+"@types/regenerator-runtime@npm:^0":
+  version: 0.13.8
+  resolution: "@types/regenerator-runtime@npm:0.13.8"
+  checksum: 130031ba8725696b99437254575bd747bc683190e2c1a776a74e8977891a95f35a2bee6d6dde48db1f7afb03202637e33c423a09dd303491dd079a6ecbd02618
   languageName: node
   linkType: hard
 
@@ -3221,6 +3251,15 @@ __metadata:
   version: 1.6.38
   resolution: "@types/webfontloader@npm:1.6.38"
   checksum: 2be3d1e43837ddeea8ea0390d0952fc735abc6d713b2b87843ad0a6d4acd6628b2ce8f0280ec81d48144a23e358d1bd22c16e4717cc8d67f75c1cd1ddc2d0f27
+  languageName: node
+  linkType: hard
+
+"@types/ws@npm:^8":
+  version: 8.5.13
+  resolution: "@types/ws@npm:8.5.13"
+  dependencies:
+    "@types/node": "*"
+  checksum: f17023ce7b89c6124249c90211803a4aaa02886e12bc2d0d2cd47fa665eeb058db4d871ce4397d8e423f6beea97dd56835dd3fdbb921030fe4d887601e37d609
   languageName: node
   linkType: hard
 
@@ -12505,6 +12544,25 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-speech-kit@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "react-speech-kit@npm:3.0.1"
+  peerDependencies:
+    prop-types: ^15.7.2
+    react: ^16.8.0
+  checksum: 0c82d3ba41482474e11c8cc77d87742acb28d3bfec500f5771b0a5553ddee9d40b22b4eba9369163b822cd1a693081a766047b6514f9d9ab66a003a9e97b530c
+  languageName: node
+  linkType: hard
+
+"react-speech-recognition@npm:^3.10.0":
+  version: 3.10.0
+  resolution: "react-speech-recognition@npm:3.10.0"
+  peerDependencies:
+    react: ">=16.8.0"
+  checksum: 40f3a2561f525d2624b154ccb6da90592a32fe131c33b3258a8892041bcf0c6f8e4527d7310718aeaee119266b1e8a1c383f9842ae984b7c97987ce9d6a5203f
+  languageName: node
+  linkType: hard
+
 "react-style-singleton@npm:^2.2.1":
   version: 2.2.1
   resolution: "react-style-singleton@npm:2.2.1"
@@ -12660,7 +12718,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"regenerator-runtime@npm:^0.14.0":
+"regenerator-runtime@npm:^0.14.0, regenerator-runtime@npm:^0.14.1":
   version: 0.14.1
   resolution: "regenerator-runtime@npm:0.14.1"
   checksum: 9f57c93277b5585d3c83b0cf76be47b473ae8c6d9142a46ce8b0291a04bb2cf902059f0f8445dcabb3fb7378e5fe4bb4ea1e008876343d42e46d3b484534ce38
@@ -15485,7 +15543,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ws@npm:8.18.0":
+"ws@npm:8.18.0, ws@npm:^8.18.0":
   version: 8.18.0
   resolution: "ws@npm:8.18.0"
   peerDependencies:

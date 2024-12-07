@@ -19,6 +19,7 @@ from dotenv import load_dotenv
 import requests
 import threading
 import logging
+import tempfile
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("AIAgent")
@@ -76,42 +77,42 @@ async def setup_ai_agent(room_id, bucket_id):
     room = await agent.join()
 
     # Room Events
-    @room.on(RoomEvents.RoomJoined)
-    def on_room_joined():
-        logger.info("Room Joined")
+    # @room.on(RoomEvents.RoomJoined)
+    # def on_room_joined():
+    #     logger.info("Room Joined")
 
-    @room.on(RoomEvents.NewPeerJoined)
-    def on_new_remote_peer(data: RoomEventsData.NewPeerJoined):
-        logger.info(f"New Remote Peer: {data['remote_peer']}")
+    # @room.on(RoomEvents.NewPeerJoined)
+    # def on_new_remote_peer(data: RoomEventsData.NewPeerJoined):
+    #     logger.info(f"New Remote Peer: {data['remote_peer']}")
 
-    @room.on(RoomEvents.RemotePeerLeft)
-    def on_peer_left(data: RoomEventsData.RemotePeerLeft):
-        logger.info(f"Peer Left: {data['remote_peer_id']}")
+    # @room.on(RoomEvents.RemotePeerLeft)
+    # def on_peer_left(data: RoomEventsData.RemotePeerLeft):
+    #     logger.info(f"Peer Left: {data['remote_peer_id']}")
 
-    @room.on(RoomEvents.RoomClosed)
-    def on_room_closed(data: RoomEventsData.RoomClosed):
-        logger.info("Room Closed")
+    # @room.on(RoomEvents.RoomClosed)
+    # def on_room_closed(data: RoomEventsData.RoomClosed):
+    #     logger.info("Room Closed")
 
-    @room.on(RoomEvents.RemoteProducerAdded)
-    def on_remote_producer_added(data: RoomEventsData.RemoteProducerAdded):
-        logger.info(f"Remote Producer Added: {data['producer_id']}")
+    # @room.on(RoomEvents.RemoteProducerAdded)
+    # def on_remote_producer_added(data: RoomEventsData.RemoteProducerAdded):
+    #     logger.info(f"Remote Producer Added: {data['producer_id']}")
 
-    @room.on(RoomEvents.RemoteProducerClosed)
-    def on_remote_producer_closed(data: RoomEventsData.RemoteProducerClosed):
-        logger.info(f"Remote Producer Closed: {data['producer_id']}")
+    # @room.on(RoomEvents.RemoteProducerClosed)
+    # def on_remote_producer_closed(data: RoomEventsData.RemoteProducerClosed):
+    #     logger.info(f"Remote Producer Closed: {data['producer_id']}")
 
-    @room.on(RoomEvents.NewConsumerAdded)
-    def on_remote_consumer_added(data: RoomEventsData.NewConsumerAdded):
-        logger.info(f"Remote Consumer Added: {data}")
+    # @room.on(RoomEvents.NewConsumerAdded)
+    # def on_remote_consumer_added(data: RoomEventsData.NewConsumerAdded):
+    #     logger.info(f"Remote Consumer Added: {data}")
 
-        if data['kind'] == 'audio':
-            track = data['consumer'].track
+    #     if data['kind'] == 'audio':
+    #         track = data['consumer'].track
 
-            if track is None:
-                logger.error("Consumer Track is None, This should never happen.")
-                return
+    #         if track is None:
+    #             logger.error("Consumer Track is None, This should never happen.")
+    #             return
 
-            llm.conversation.add_track(data['consumer_id'], track)
+    #         llm.conversation.add_track(data['consumer_id'], track)
     
     # # Agent Events
     # @agent.on(AgentsEvents.Connected)
@@ -252,6 +253,41 @@ def generate_questions():
         print(f"Error generating questions: {str(e)}")
         return jsonify({
             "error": "Failed to generate questions",
+            "details": str(e)
+        }), 500
+
+@app.route('/transcribe', methods=['POST'])
+def transcribe_audio():
+    try:
+        if 'audio' not in request.files:
+            return jsonify({
+                "error": "No audio file provided"
+            }), 400
+
+        audio_file = request.files['audio']
+
+        # Create a temporary file to store the audio
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.webm') as temp_audio:
+            audio_file.save(temp_audio.name)
+            
+            # Open the saved audio file and transcribe it using OpenAI's Whisper
+            with open(temp_audio.name, 'rb') as audio:
+                transcript = openai_client.audio.transcriptions.create(
+                    model="whisper-1",
+                    file=audio,
+                )
+
+        # Clean up the temporary file
+        os.unlink(temp_audio.name)
+
+        return jsonify({
+            "text": transcript.text
+        })
+
+    except Exception as e:
+        logger.error(f"Error in transcribe: {e}")
+        return jsonify({
+            "error": "Failed to transcribe audio",
             "details": str(e)
         }), 500
 
