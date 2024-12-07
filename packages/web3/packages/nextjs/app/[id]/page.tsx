@@ -69,7 +69,7 @@ const VerificationPage = ({ params }: { params: { id: string } }) => {
   }, [previewUrl]);
 
   const handleVerify = async () => {
-    if (!imageFile) return;
+    // if (!imageFile) return;
     
     try {
       // Create room
@@ -157,6 +157,7 @@ const VerificationPage = ({ params }: { params: { id: string } }) => {
               <p>✅ Verified successfully</p>
             </>
           )}
+          <button onClick={handleVerify}>Verify</button>
       </div>
     
 )}

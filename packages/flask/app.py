@@ -3,7 +3,7 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 import asyncio
 import os
-from ai01.agent import Agent, AgentOptions, AgentsEvents
+from ai01.agent import Agent, AgentOptions
 from ai01.providers.openai import AudioTrack
 from ai01.providers.openai.realtime import RealTimeModel, RealTimeModelOptions
 from ai01.rtc import (
@@ -28,8 +28,6 @@ CORS(app)
 
 load_dotenv()
 
-loop = asyncio.get_event_loop()
-
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 HUDDLE_API_KEY = os.environ.get("HUDDLE_API_KEY")
 HUDDLE_PROJECT_ID = os.environ.get("HUDDLE_PROJECT_ID")
@@ -43,6 +41,8 @@ print(HUDDLE_PROJECT_ID)
 openai_client = OpenAI(
     api_key=OPENAI_API_KEY,
 )
+
+active_agents = {}  # Dictionary to track active agents by room_id
 
 async def setup_ai_agent(room_id, bucket_id):
     # Configure RTC options with environment variables
@@ -114,25 +114,25 @@ async def setup_ai_agent(room_id, bucket_id):
             llm.conversation.add_track(data['consumer_id'], track)
     
     # # Agent Events
-    @agent.on(AgentsEvents.Connected)
-    def on_agent_connected():
-        logger.info("Agent Connected")
+    # @agent.on(AgentsEvents.Connected)
+    # def on_agent_connected():
+    #     logger.info("Agent Connected")
 
-    @agent.on(AgentsEvents.Disconnected)
-    def on_agent_disconnected():
-        logger.info("Agent Disconnected")
+    # @agent.on(AgentsEvents.Disconnected)
+    # def on_agent_disconnected():
+    #     logger.info("Agent Disconnected")
 
-    @agent.on(AgentsEvents.Speaking)
-    def on_agent_speaking():
-        logger.info("Agent Speaking")
+    # @agent.on(AgentsEvents.Speaking)
+    # def on_agent_speaking():
+    #     logger.info("Agent Speaking")
 
-    @agent.on(AgentsEvents.Listening)
-    def on_agent_listening():
-        logger.info("Agent Listening")
+    # @agent.on(AgentsEvents.Listening)
+    # def on_agent_listening():
+    #     logger.info("Agent Listening")
 
-    @agent.on(AgentsEvents.Thinking)
-    def on_agent_thinking():
-        logger.info("Agent Thinking")
+    # @agent.on(AgentsEvents.Thinking)
+    # def on_agent_thinking():
+    #     logger.info("Agent Thinking")
 
 
     await llm.connect()
@@ -172,12 +172,21 @@ def ai_join():
         if not room_id:
             return jsonify({"status": "error", "message": "room_id is required"}), 400
 
+        # Check if an agent is already active in this room
+        if room_id in active_agents and active_agents[room_id].is_alive():
+            return jsonify({
+                "status": "error",
+                "message": "AI agent already exists in this room"
+            }), 400
+
         # Start the agent in a new thread
         thread = threading.Thread(target=run_in_new_loop, args=(room_id, bucket_id))
-        thread.daemon = True  # This ensures the thread will be killed when the main program exits
+        thread.daemon = True
         thread.start()
+        
+        # Store the thread reference
+        active_agents[room_id] = thread
 
-        # Immediately return response while agent runs in background
         return jsonify({
             "status": "success",
             "message": "AI agent setup initiated",
