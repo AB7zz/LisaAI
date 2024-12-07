@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
+
 interface Specification {
   role: string;
   requirements: string;
@@ -24,7 +25,7 @@ const JobSpecification: React.FC = () => {
     };
 
     try {
-      // Make POST request to generate questions
+      // Generate questions
       const response = await fetch('http://localhost:5000/generate-questions', {
         method: 'POST',
         headers: {
@@ -39,14 +40,13 @@ const JobSpecification: React.FC = () => {
 
       const generatedQuestions = await response.json();
       
-      // Store both specification and generated questions
-      localStorage.setItem('jobSpecification', JSON.stringify(specification));
+      // Store in localStorage
       localStorage.setItem('generatedQuestions', JSON.stringify(generatedQuestions));
 
       // Navigate to questions page
-      router.push('/questions');
+      router.push(`/questions`);
     } catch (error) {
-      console.error('Error generating questions:', error);
+      console.error('Error:', error);
       // Handle error appropriately
     }
   };
