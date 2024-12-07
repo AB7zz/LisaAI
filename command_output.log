@@ -1,0 +1,12 @@
+
+Command: shopt -s histappend
+Output:
+
+Exit Code: 0
+----
+Command: ls
+Output:
+command_output.log
+packages
+Exit Code: 0
+----

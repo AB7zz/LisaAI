@@ -4,7 +4,7 @@ import {
   useAnonAadhaar,
   useProver,
 } from "@anon-aadhaar/react";
-import { useEffect,useState } from "react";
+import { useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { useRouter } from "next/navigation";
 
@@ -16,20 +16,20 @@ type HomeProps = {
 
 
 const mockEmails = [
-    {
-      id: 1,
-      subject: "Interview Invitation - Software Developer Position",
-      body: "Dear candidate, we would like to invite you for an interview...",
-      from: "abhinavcv007@gmail.com",
-      date: "2024-03-20"
-    },
-    // Add more mock emails as needed
+  {
+    id: 1,
+    subject: "Interview Invitation - Software Developer Position",
+    body: "Dear candidate, we would like to invite you for an interview...",
+    from: "abhinavcv007@gmail.com",
+    date: "2024-03-20"
+  },
+  // Add more mock emails as needed
 ];
 
 
 
 const VerificationPage = ({ params }: { params: { id: string } }) => {
-    const [currentStep, setCurrentStep] = useState(1);
+  const [currentStep, setCurrentStep] = useState(1);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
@@ -70,7 +70,7 @@ const VerificationPage = ({ params }: { params: { id: string } }) => {
 
   const handleVerify = async () => {
     // if (!imageFile) return;
-    
+
     try {
       // Create room
       const roomResponse = await fetch('/api/create-room', {
@@ -83,7 +83,7 @@ const VerificationPage = ({ params }: { params: { id: string } }) => {
       // Get access token
       const tokenResponse = await fetch(`/api/get-access-token?roomId=${roomId}`);
       const tokenData = await tokenResponse.json();
-      
+
       // Redirect to video call page
       router.push(`/${params.id}/${roomId}?token=${tokenData.token}`);
     } catch (error) {
@@ -99,14 +99,14 @@ const VerificationPage = ({ params }: { params: { id: string } }) => {
           {/* Background track */}
           <div className="absolute left-0 right-0 top-1/2 h-1 bg-gray-200 -z-10" />
           {/* Progress fill - animates with currentStep */}
-          <div className="absolute left-0 right-0 top-1/2 h-1 bg-primary transition-all duration-500 -z-10" 
-               style={{ width: `${((currentStep - 1) / 2) * 100}%` }} />
+          <div className="absolute left-0 right-0 top-1/2 h-1 bg-primary transition-all duration-500 -z-10"
+            style={{ width: `${((currentStep - 1) / 2) * 100}%` }} />
           {[1, 2, 3].map((step) => (
-            <div 
-              key={step} 
+            <div
+              key={step}
               className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-300
-                ${step <= currentStep 
-                  ? 'bg-primary border-primary text-white' 
+                ${step <= currentStep
+                  ? 'bg-primary border-primary text-white'
                   : 'bg-white border-gray-200 text-gray-500'}`}
             >
               {step}
@@ -145,22 +145,22 @@ const VerificationPage = ({ params }: { params: { id: string } }) => {
 
       {/* Step 2: Aadhar Verification */}
       {currentStep === 2 && (
-  <div className="w-full max-w-xl border rounded-lg p-4">
-    
-        <main className="flex flex-col items-center  gap-8 bg-white rounded-2xl max-w-screen-sm mx-auto h-[24rem] md:h-[20rem] p-8">
-          <p className="font-bold ">Prove your Identity anonymously using your Aadhaar card.</p>
+        <div className="w-full max-w-xl border rounded-lg p-4">
 
-          <LogInWithAnonAadhaar nullifierSeed={1234} />
-        </main>
-        {anonAadhaar.status === "logged-in" && (
+          <main className="flex flex-col items-center  gap-8 bg-white rounded-2xl max-w-screen-sm mx-auto h-[24rem] md:h-[20rem] p-8">
+            <p className="font-bold ">Prove your Identity anonymously using your Aadhaar card.</p>
+
+            <LogInWithAnonAadhaar nullifierSeed={1234} />
+          </main>
+          {anonAadhaar.status === "logged-in" && (
             <>
               <p>✅ Verified successfully</p>
             </>
           )}
           <button onClick={handleVerify}>Verify</button>
-      </div>
-    
-)}
+        </div>
+
+      )}
 
     </div>
   );

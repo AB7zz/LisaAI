@@ -1,0 +1,13 @@
+Command: cd packages/
+Output:
+bash: cd: packages/: No such file or directory
+Exit Code: 1
+----
+Command: ls
+Output:
+command_output.log
+experiment
+flask
+web3
+Exit Code: 0
+----
