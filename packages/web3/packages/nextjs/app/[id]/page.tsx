@@ -1,8 +1,19 @@
-"use client";
-
-import { useEffect, useState } from "react";
+"use client"
+import {
+  LogInWithAnonAadhaar,
+  useAnonAadhaar,
+  useProver,
+} from "@anon-aadhaar/react";
+import { useEffect,useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { useRouter } from "next/navigation";
+
+type HomeProps = {
+  setUseTestAadhaar: (state: boolean) => void;
+  useTestAadhaar: boolean;
+};
+
+
 
 const mockEmails = [
     {
@@ -35,6 +46,18 @@ const VerificationPage = ({ params }: { params: { id: string } }) => {
       setPreviewUrl(URL.createObjectURL(file));
     }
   });
+
+  const [anonAadhaar] = useAnonAadhaar();
+  const [, latestProof] = useProver();
+
+  useEffect(() => {
+    if (anonAadhaar.status === "logged-in") {
+      console.log("Logged-in status:", anonAadhaar.status);
+      if (latestProof) {
+        console.log("Aadhaar Proof:", latestProof);
+      }
+    }
+  }, [anonAadhaar, latestProof]);
 
   // Cleanup preview URL when component unmounts
   useEffect(() => {
@@ -122,63 +145,22 @@ const VerificationPage = ({ params }: { params: { id: string } }) => {
 
       {/* Step 2: Aadhar Verification */}
       {currentStep === 2 && (
-        <div className="w-full max-w-xl">
-          <div className="w-full max-w-xl">
-            <div
-            {...getRootProps()}
-            className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors
-                ${isDragActive ? "border-primary bg-primary/10" : "border-gray-300"}
-                ${imageFile ? "border-success" : ""}`}
-            >
-            <input {...getInputProps()} />
-            
-            {previewUrl ? (
-                <div className="relative">
-                <img 
-                    src={previewUrl} 
-                    alt="Preview" 
-                    className="max-h-[300px] mx-auto rounded-lg"
-                />
-                <p className="mt-2 text-sm text-gray-500">Click or drag to replace</p>
-                </div>
-            ) : (
-                <div>
-                <div className="flex justify-center mb-4">
-                    <svg
-                    className="w-12 h-12 text-gray-400"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    >
-                    <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                    />
-                    </svg>
-                </div>
-                <p className="text-lg">Drag and drop your Aadhar card image here</p>
-                <p className="text-sm text-gray-500 mt-2">or click to select file</p>
-                <p className="text-xs text-gray-400 mt-1">Supported formats: JPEG, JPG, PNG</p>
-                </div>
-            )}
-            </div>
+  <div className="w-full max-w-xl border rounded-lg p-4">
+    
+        <main className="flex flex-col items-center  gap-8 bg-white rounded-2xl max-w-screen-sm mx-auto h-[24rem] md:h-[20rem] p-8">
+          <p className="font-bold ">Prove your Identity anonymously using your Aadhaar card.</p>
 
-            <button
-            onClick={handleVerify}
-            disabled={!imageFile}
-            className={`w-full mt-4 py-3 rounded-lg font-medium transition-all
-                ${imageFile 
-                ? "bg-primary text-white hover:bg-primary/90" 
-                : "bg-gray-200 text-gray-500 cursor-not-allowed"
-                }`}
-            >
-            Verify Aadhar Card
-            </button>
-        </div>
-        </div>
-      )}
+          <LogInWithAnonAadhaar nullifierSeed={1234} />
+        </main>
+        {anonAadhaar.status === "logged-in" && (
+            <>
+              <p>✅ Verified successfully</p>
+            </>
+          )}
+      </div>
+    
+)}
+
     </div>
   );
 };
