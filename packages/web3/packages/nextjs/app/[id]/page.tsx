@@ -17,7 +17,7 @@ const mockEmails = [
 
 
 
-const VerificationPage = ({ params }: { params: { verificationId: string } }) => {
+const VerificationPage = ({ params }: { params: { id: string } }) => {
     const [currentStep, setCurrentStep] = useState(1);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);

@@ -11,7 +11,7 @@ import {
   useRemoteVideo,
   useRemoteAudio,
 } from '@huddle01/react/hooks';
-import { Video } from '@huddle01/react/components';
+import { Video, Audio } from '@huddle01/react/components';
 
 const RemotePeer = ({ peerId }: { peerId: string }) => {
   const { stream: videoStream } = useRemoteVideo({ peerId });
