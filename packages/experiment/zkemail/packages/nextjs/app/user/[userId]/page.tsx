@@ -23,7 +23,7 @@ const UserPage: NextPage = () => {
 
       // Initialize ZK Email SDK
       const sdk = zkeSDK();
-      const blueprint = await sdk.getBlueprint("AazimAnish/fromAddress@v1");
+      const blueprint = await sdk.getBlueprint("AazimAnish/fromAddress@v2");
       const prover = blueprint.createProver();
       
       // Generate the proof
