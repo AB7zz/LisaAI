@@ -17,6 +17,10 @@ const RemotePeer = ({ peerId }: { peerId: string }) => {
   const { stream: videoStream } = useRemoteVideo({ peerId });
   const { stream: audioStream } = useRemoteAudio({ peerId });
 
+  useEffect(() => {
+    console.log('Remote Peer:', peerId);
+  }, [peerId]);
+
   return (
     <div className="relative bg-base-100 rounded-xl p-4 shadow-lg">
       <div className="aspect-video bg-base-300 rounded-lg overflow-hidden">
@@ -36,7 +40,7 @@ const RemotePeer = ({ peerId }: { peerId: string }) => {
   );
 };
 
-const VideoCallPage = ({ params }: { params: { meetid: string } }) => {
+const VideoCallPage = ({ params }: { params: { meetid: string; id: string } }) => {
   const searchParams = useSearchParams();
   const token = searchParams.get('token');
 
@@ -49,6 +53,10 @@ const VideoCallPage = ({ params }: { params: { meetid: string } }) => {
   const { stream: audioStream, enableAudio, disableAudio, isAudioOn } = useLocalAudio();
   const { startScreenShare, stopScreenShare, shareStream } = useLocalScreenShare();
   const { peerIds } = usePeerIds();
+
+  useEffect(() => {
+    console.log('Peers updated:', peerIds);
+  }, [peerIds]);
 
   useEffect(() => {
     if (token && params.meetid) {
@@ -66,7 +74,8 @@ const VideoCallPage = ({ params }: { params: { meetid: string } }) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          room_id: params.meetid
+          room_id: params.meetid,
+          bucket_id: params.id
         })
       })
       .then(response => response.json())
@@ -76,7 +85,7 @@ const VideoCallPage = ({ params }: { params: { meetid: string } }) => {
       })
       .catch(error => console.error('Error adding AI agent:', error));
     }
-  }, [token, params.meetid, joinRoom]);
+  }, [token, params.meetid, params.id, joinRoom, peerIds]);
 
   return (
     <div className="min-h-screen p-4 bg-base-200">

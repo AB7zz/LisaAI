@@ -64,7 +64,6 @@ const Questions: React.FC = () => {
   };
 
   const generateUrl = async () => {
-    console.log(questions)
     try {
       const uniqueId = Math.random().toString(36).substr(2, 9);
 
