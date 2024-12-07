@@ -7,8 +7,34 @@ import {
   useLocalVideo,
   useLocalAudio,
   useLocalScreenShare,
+  usePeerIds,
+  useRemoteVideo,
+  useRemoteAudio,
 } from '@huddle01/react/hooks';
 import { Video } from '@huddle01/react/components';
+
+const RemotePeer = ({ peerId }: { peerId: string }) => {
+  const { stream: videoStream } = useRemoteVideo({ peerId });
+  const { stream: audioStream } = useRemoteAudio({ peerId });
+
+  return (
+    <div className="relative bg-base-100 rounded-xl p-4 shadow-lg">
+      <div className="aspect-video bg-base-300 rounded-lg overflow-hidden">
+        {videoStream ? (
+          <Video
+            stream={videoStream}
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center text-base-content">
+            Peer Camera Off
+          </div>
+        )}
+      </div>
+      {audioStream && <Audio stream={audioStream} />}
+    </div>
+  );
+};
 
 const VideoCallPage = ({ params }: { params: { meetid: string } }) => {
   const searchParams = useSearchParams();
@@ -22,13 +48,33 @@ const VideoCallPage = ({ params }: { params: { meetid: string } }) => {
   const { stream: videoStream, enableVideo, disableVideo, isVideoOn } = useLocalVideo();
   const { stream: audioStream, enableAudio, disableAudio, isAudioOn } = useLocalAudio();
   const { startScreenShare, stopScreenShare, shareStream } = useLocalScreenShare();
+  const { peerIds } = usePeerIds();
 
   useEffect(() => {
     if (token && params.meetid) {
+      const hasJoined = sessionStorage.getItem(`room-${params.meetid}`);
+      // if (hasJoined) return;
+
       joinRoom({
         roomId: params.meetid,
         token: token
       });
+
+      fetch('http://localhost:5000/ai-join', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          room_id: params.meetid
+        })
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log('AI agent status:', data);
+        sessionStorage.setItem(`room-${params.meetid}`, 'true');
+      })
+      .catch(error => console.error('Error adding AI agent:', error));
     }
   }, [token, params.meetid, joinRoom]);
 
@@ -71,6 +117,13 @@ const VideoCallPage = ({ params }: { params: { meetid: string } }) => {
               💻
             </button>
           </div>
+        </div>
+
+        {/* Remote Peers Display */}
+        <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+          {peerIds.map((peerId) => (
+            <RemotePeer key={peerId} peerId={peerId} />
+          ))}
         </div>
 
         {/* Leave Button */}
