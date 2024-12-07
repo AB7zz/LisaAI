@@ -1,7 +1,7 @@
 import "@rainbow-me/rainbowkit/styles.css";
 import "~~/styles/globals.css";
 import { getMetadata } from "~~/utils/scaffold-eth/getMetadata";
-import { ScaffoldEthAppClient } from "./scaffold-eth-app-client.tsx";
+import { ScaffoldEthAppClient } from "./scaffold-eth-app-client";
 
 export const metadata = getMetadata({ title: "Scaffold-ETH 2 App", description: "Built with 🏗 Scaffold-ETH 2" });
 

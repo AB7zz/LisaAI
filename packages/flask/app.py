@@ -6,9 +6,13 @@ import os
 from ai01.agent import Agent, AgentOptions, AgentsEvents
 from ai01.providers.openai import AudioTrack
 from ai01.rtc import RTCOptions, Role, RoomEvents, HuddleClientOptions
+import openai
 
 app = Flask(__name__)
 CORS(app)
+
+# Initialize OpenAI client
+openai.api_key = os.environ.get('OPENAI_API_KEY')
 
 @app.route('/ai-join', methods=['POST'])
 async def ai_join():
@@ -133,6 +137,61 @@ async def ai_join():
 
     except Exception as e:
         print(e)
+
+@app.route('/generate-questions', methods=['POST'])
+def generate_questions():
+    try:
+        data = request.get_json()
+        role = data.get('role')
+        requirements = data.get('requirements')
+
+        if not role or not requirements:
+            return jsonify({
+                "error": "Missing required fields: role and requirements"
+            }), 400
+
+        # Construct the prompt for OpenAI
+        prompt = f"""
+        Generate 5 technical interview questions for a {role} position.
+        The candidate should meet these requirements:
+        {requirements}
+
+        Generate questions that:
+        1. Are specific to the role and requirements
+        2. Test both theoretical knowledge and practical experience
+        3. Allow candidates to demonstrate problem-solving abilities
+        4. Are open-ended but focused
+        
+        Return the response as a JSON array where each object has an 'id' (number) and 'question' (string) field.
+        Example format:
+        [
+            {{"id": 1, "question": "Your question here"}},
+            {{"id": 2, "question": "Another question here"}}
+        ]
+        """
+
+        # Make API call to OpenAI
+        response = openai.ChatCompletion.create(
+            model="gpt-4",
+            messages=[
+                {"role": "system", "content": "You are a technical interviewer. Always respond with properly formatted JSON."},
+                {"role": "user", "content": prompt}
+            ],
+            response_format={ "type": "json_object" },  # Ensure JSON response
+            temperature=0.7,
+            max_tokens=1000
+        )
+
+        # Parse the JSON response directly
+        questions = response.choices[0].message.content
+        return questions  # Flask will automatically jsonify the parsed JSON
+
+    except Exception as e:
+        print(f"Error generating questions: {str(e)}")
+        return jsonify({
+            "error": "Failed to generate questions",
+            "details": str(e)
+        }), 500
 
 if __name__ == '__main__':
     app.run(debug=True)

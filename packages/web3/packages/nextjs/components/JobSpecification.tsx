@@ -1,4 +1,7 @@
+"use client";
+
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 interface Specification {
   role: string;
@@ -6,12 +9,13 @@ interface Specification {
 }
 
 const JobSpecification: React.FC = () => {
+  const router = useRouter();
   const [jobRole, setJobRole] = useState<string>('');
   const [requirements, setRequirements] = useState<string>('');
 
   const isFormValid = jobRole.trim() !== '' && requirements.trim() !== '';
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const specification: Specification = {
@@ -19,11 +23,32 @@ const JobSpecification: React.FC = () => {
       requirements,
     };
 
-    console.log('Submitted Specification:', specification);
+    try {
+      // Make POST request to generate questions
+      const response = await fetch('http://localhost:5000/generate-questions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(specification),
+      });
 
-    // Reset form
-    setJobRole('');
-    setRequirements('');
+      if (!response.ok) {
+        throw new Error('Failed to generate questions');
+      }
+
+      const generatedQuestions = await response.json();
+      
+      // Store both specification and generated questions
+      localStorage.setItem('jobSpecification', JSON.stringify(specification));
+      localStorage.setItem('generatedQuestions', JSON.stringify(generatedQuestions));
+
+      // Navigate to questions page
+      router.push('/questions');
+    } catch (error) {
+      console.error('Error generating questions:', error);
+      // Handle error appropriately
+    }
   };
 
   return (
