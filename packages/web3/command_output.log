@@ -1,0 +1,73 @@
+Command: cd web3/
+Output:
+bash: cd: web3/: No such file or directory
+Exit Code: 1
+----
+Command: ls
+Output:
+CONTRIBUTING.md
+LICENCE
+command_output.log
+package.json
+packages
+yarn.lock
+Exit Code: 0
+----
+Command: yarn add
+Output:
+➤ YN0000: ┌ Resolution step
+➤ YN0060: │ @anon-aadhaar/react@npm:2.4.2 [ef549] provides react-dom (pf7dad) with version 18.3.1, which doesn't satisfy what react-qr-reader requests
+➤ YN0002: │ @huddle01/react@npm:2.2.4 doesn't provide @testing-library/dom (pc17de), requested by @testing-library/react
+➤ YN0060: │ @huddle01/react@npm:2.2.4 provides react (pa01ba) with version 18.2.0, which doesn't satisfy what @testing-library/react-hooks and some of its descendants request
+➤ YN0002: │ @huddle01/react@npm:2.2.4 doesn't provide react-dom (paba9a), requested by @testing-library/react
+➤ YN0060: │ @metamask/sdk@npm:0.30.1 [e65da] provides eciesjs (pd7d8c) with version 0.4.12, which doesn't satisfy what @metamask/sdk-communication-layer requests
+➤ YN0002: │ @metamask/sdk@npm:0.30.1 [e65da] doesn't provide react-native (pff83d), requested by react-native-webview
+➤ YN0002: │ @se-2/hardhat@workspace:packages/hardhat doesn't provide @types/node (p7e794), requested by ts-node
+➤ YN0060: │ @se-2/hardhat@workspace:packages/hardhat provides ethers (pa1af8) with version 6.13.4, which doesn't satisfy what @typechain/ethers-v5 requests
+➤ YN0002: │ @se-2/nextjs@workspace:packages/nextjs doesn't provide @typescript-eslint/parser (p1319a), requested by @typescript-eslint/eslint-plugin
+➤ YN0060: │ @se-2/nextjs@workspace:packages/nextjs provides react (pa3929) with version 18.3.1, which doesn't satisfy what @anon-aadhaar/react and some of its descendants request
+➤ YN0002: │ @typescript-eslint/type-utils@npm:8.8.1 [b22aa] doesn't provide eslint (p547eb), requested by @typescript-eslint/utils
+➤ YN0002: │ burner-connector@npm:0.0.8 doesn't provide @tanstack/react-query (p1976a), requested by @rainbow-me/rainbowkit
+➤ YN0002: │ burner-connector@npm:0.0.8 doesn't provide react (pe7978), requested by @rainbow-me/rainbowkit
+➤ YN0002: │ burner-connector@npm:0.0.8 doesn't provide react-dom (p8b229), requested by @rainbow-me/rainbowkit
+➤ YN0002: │ burner-connector@npm:0.0.8 doesn't provide wagmi (pe6d35), requested by @rainbow-me/rainbowkit
+➤ YN0002: │ daisyui@npm:4.12.10 doesn't provide postcss (p8e18b), requested by postcss-js
+➤ YN0002: │ react-hot-toast@npm:2.4.1 [ef549] doesn't provide csstype (p1ce86), requested by goober
+➤ YN0000: │ Some peer dependencies are incorrectly met; run yarn explain peer-requirements <hash> for details, where <hash> is the six-letter p-prefixed code
+➤ YN0000: └ Completed
+➤ YN0000: ┌ Fetch step
+➤ YN0000: └ Completed in 0s 353ms
+➤ YN0000: ┌ Link step
+➤ YN0007: │ se-2@workspace:. must be built because it never has been before or the last one failed
+➤ YN0009: │ se-2@workspace:. couldn't be built successfully (exit code 1, logs can be found here: /private/var/folders/q2/ls08yg813g52j21lhs6gws9c0000gn/T/xfs-40f46cdc/build.log)
+➤ YN0000: └ Completed in 0s 429ms
+➤ YN0000: Failed with errors in 0s 965ms
+Exit Code: 1
+----
+Command: yarn start
+Output:
+  ▲ Next.js 14.2.20
+  - Local:        http://localhost:3000
+
+ ✓ Starting...
+Error: Cannot find module 'crypto-browserify'
+Require stack:
+- /Users/aazimanish/Developer/LisaAI/packages/web3/packages/nextjs/next.config.js
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1224:15)
+    at /Users/aazimanish/Developer/LisaAI/packages/web3/packages/nextjs/node_modules/next/dist/server/require-hook.js:55:36
+    at Function.resolve (node:internal/modules/helpers:190:19)
+    at Object.webpack (/Users/aazimanish/Developer/LisaAI/packages/web3/packages/nextjs/next.config.js:17:23)
+    at getBaseWebpackConfig (/Users/aazimanish/Developer/LisaAI/packages/web3/packages/nextjs/node_modules/next/dist/build/webpack-config.js:1838:32)
+    at async Promise.all (index 1)
+    at async Span.traceAsyncFn (/Users/aazimanish/Developer/LisaAI/packages/web3/packages/nextjs/node_modules/next/dist/trace/trace.js:154:20)
+    at async Span.traceAsyncFn (/Users/aazimanish/Developer/LisaAI/packages/web3/packages/nextjs/node_modules/next/dist/trace/trace.js:154:20)
+    at async HotReloaderWebpack.start (/Users/aazimanish/Developer/LisaAI/packages/web3/packages/nextjs/node_modules/next/dist/server/dev/hot-reloader-webpack.js:621:37)
+    at async startWatcher (/Users/aazimanish/Developer/LisaAI/packages/web3/packages/nextjs/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js:156:5) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    '/Users/aazimanish/Developer/LisaAI/packages/web3/packages/nextjs/next.config.js'
+  ]
+}
+[?25h
+Exit Code: 0
+----
