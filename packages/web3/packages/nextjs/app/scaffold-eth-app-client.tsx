@@ -3,6 +3,7 @@
 import { HuddleClient, HuddleProvider } from "@huddle01/react";
 import { ScaffoldEthAppWithProviders } from "~~/components/ScaffoldEthAppWithProviders";
 import { ThemeProvider } from "~~/components/ThemeProvider";
+import AppProvider from "~~/components/AppProvider";
 
 const huddleClient = new HuddleClient({
   projectId: process.env.NEXT_PUBLIC_PROJECT_ID!,
@@ -19,9 +20,11 @@ export const ScaffoldEthAppClient = ({ children }: { children: React.ReactNode }
       <body>
         <ThemeProvider enableSystem>
           <HuddleProvider client={huddleClient}>
-            <ScaffoldEthAppWithProviders>
-              {children}
-            </ScaffoldEthAppWithProviders>
+            <AppProvider session={undefined}> {/* We'll get the session from the root layout */}
+              <ScaffoldEthAppWithProviders>
+                {children}
+              </ScaffoldEthAppWithProviders>
+            </AppProvider>
           </HuddleProvider>
         </ThemeProvider>
       </body>
