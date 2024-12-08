@@ -9,6 +9,7 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: process.env.NEXT_PUBLIC_IGNORE_BUILD_ERROR === "true",
   },
+  transpilePackages: ['@safe-global/safe-apps-sdk', 'isows', 'okto-sdk-react'],
   webpack: config => {
     config.resolve.fallback = { 
       fs: false, 
