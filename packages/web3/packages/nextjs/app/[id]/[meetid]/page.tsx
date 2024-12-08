@@ -70,6 +70,9 @@ const VideoCallPage = ({ params }: { params: { meetid: string; id: string } }) =
   const [questions, setQuestions] = useState<any>(null);
   const [aiResponse, setAiResponse] = useState<string>('');
   const [responses, setResponses] = useState<Array<{question: string, answer: string}>>([]);
+  const [isScoring, setIsScoring] = useState<boolean>(false);
+  const [isAttesting, setIsAttesting] = useState<boolean>(false);
+  const [score, setScore] = useState<number | null>(0);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
 
@@ -113,7 +116,47 @@ const VideoCallPage = ({ params }: { params: { meetid: string; id: string } }) =
 
     const askQuestion = async () => {
       if (currentQuestionIndex >= questions.length) {
-        console.log('All questions have been asked');
+        console.log('Interview completed! Here are the responses:', responses);
+        setIsScoring(true);
+        
+        try {
+          const response = await fetch('http://localhost:5000/score', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ responses }),
+          });
+          
+          const data = await response.json();
+          console.log('Interview Score:', data.score);
+          setScore(data.score);
+          
+          // Start attestation process
+          setIsScoring(false);
+          setIsAttesting(true);
+          
+          // Call the attestation API
+          const attestResponse = await fetch('/api/attest', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              privateKey: '0x' + Array(64).fill('0123456789ABCDEF'[Math.floor(Math.random() * 16)]).join(''),
+              score: data.score
+            }),
+          });
+
+          const attestData = await attestResponse.json();
+          console.log('Attestation created with UID:', attestData.attestationUID);
+          setIsAttesting(false);
+          
+        } catch (error) {
+          console.error('Error during scoring or attestation:', error);
+          setIsScoring(false);
+          setIsAttesting(false);
+        }
         return;
       }
 
@@ -134,7 +177,7 @@ const VideoCallPage = ({ params }: { params: { meetid: string; id: string } }) =
     };
 
     askQuestion();
-  }, [questions, currentQuestionIndex, isAsking, browserSupportsSpeechRecognition]);
+  }, [questions, currentQuestionIndex, isAsking, browserSupportsSpeechRecognition, responses]);
 
   // Add these control functions
   const restartInterview = () => {
@@ -207,10 +250,42 @@ const VideoCallPage = ({ params }: { params: { meetid: string; id: string } }) =
     </div>
   );
 
+  // Add this to show scoring and attestation status
+  const renderProcessingStatus = () => {
+    if (isScoring || isAttesting || score !== null) {
+      return (
+        <div className="mt-4 p-4 bg-base-100 rounded-xl shadow-lg mb-10">
+          {isScoring && (
+            <div className="flex items-center gap-2">
+              <div className="loading loading-spinner loading-md"></div>
+              <p>Calculating interview score...</p>
+            </div>
+          )}
+          
+          {score !== null && !isAttesting && (
+            <div>
+              <h3 className="text-lg font-semibold mb-2">Interview Score:</h3>
+              <p className="text-2xl font-bold">{score}/100</p>
+            </div>
+          )}
+          
+          {isAttesting && (
+            <div className="flex items-center gap-2">
+              <div className="loading loading-spinner loading-md"></div>
+              <p>Attesting interview results and notifying recruiter...</p>
+            </div>
+          )}
+        </div>
+      );
+    }
+    return null;
+  };
+
   return (
     <div className="min-h-screen p-4 bg-base-200">
       <div className="max-w-4xl mx-auto">
         {renderInterviewStatus()}
+        {renderProcessingStatus()}
         {/* AI Response Display */}
         {aiResponse && (
           <div className="mt-4 p-4 bg-base-100 rounded-xl shadow-lg">

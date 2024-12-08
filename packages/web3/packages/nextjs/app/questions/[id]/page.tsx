@@ -99,7 +99,7 @@ const Questions: React.FC = () => {
       <h2 className="text-2xl font-bold text-gray-800 mb-6">Interview Questions</h2>
       
       <div className="space-y-4">
-        {questions.map(question => (
+        {questions && questions.map(question => (
           <div key={question.id} className="flex items-center space-x-4 p-4 border rounded-md hover:border-gray-400 transition-colors">
             {editingId === question.id ? (
               <>

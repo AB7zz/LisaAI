@@ -291,5 +291,62 @@ def transcribe_audio():
             "details": str(e)
         }), 500
 
+@app.route('/score', methods=['POST'])
+def score_interview():
+    try:
+        data = request.get_json()
+        responses = data.get('responses')
+
+        if not responses:
+            return jsonify({
+                "error": "No responses provided"
+            }), 400
+
+        # Create a prompt for GPT-4 to analyze the responses
+        prompt = """
+        Analyze these interview responses and provide a single overall score from 0-100. 
+        Consider the candidate's entire performance across all responses, evaluating:
+        - Technical accuracy and knowledge
+        - Communication skills and clarity
+        - Problem-solving approach
+        - Depth of understanding
+        
+        Return only a single integer score between 0-100.
+        
+        Responses to analyze:
+        """
+        
+        for qa in responses:
+            prompt += f"\nQ: {qa['question']}\nA: {qa['answer']}\n"
+
+        # Get evaluation from GPT-4
+        response = openai_client.chat.completions.create(
+            messages=[
+                {"role": "system", "content": "You are an expert technical interviewer. Evaluate the entire interview and return only a single number 0-100."},
+                {"role": "user", "content": prompt}
+            ],
+            model="gpt-4",
+            temperature=0.7,
+        )
+
+        # Extract the score from the response
+        try:
+            score = int(response.choices[0].message.content.strip())
+            # Ensure score is within bounds
+            score = max(0, min(100, score))
+        except ValueError:
+            score = 50  # Default score if parsing fails
+
+        return jsonify({
+            "score": score
+        })
+
+    except Exception as e:
+        logger.error(f"Error in score_interview: {e}")
+        return jsonify({
+            "error": "Failed to score interview",
+            "details": str(e)
+        }), 500
+
 if __name__ == '__main__':
     app.run(debug=True)
